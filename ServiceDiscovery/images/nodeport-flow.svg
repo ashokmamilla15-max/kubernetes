@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 320" width="100%" height="100%" style="background-color: #0f172a; border-radius: 12px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <defs>
+    <filter id="shadow-nodeport" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="410" y="32" fill="#38bdf8" font-size="18" font-weight="700" text-anchor="middle">Kubernetes NodePort Service Flow</text>
+
+  <!-- Step 1: External Browser -->
+  <g transform="translate(30, 70)">
+    <rect x="0" y="0" width="170" height="210" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="2" filter="url(#shadow-nodeport)" />
+    <rect x="10" y="10" width="150" height="28" rx="6" fill="#0284c7" />
+    <text x="85" y="29" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">🌐 Web Browser</text>
+    <text x="85" y="65" fill="#94a3b8" font-size="11" text-anchor="middle">External User</text>
+    <rect x="15" y="85" width="140" height="45" rx="6" fill="#0f172a" stroke="#38bdf8" />
+    <text x="85" y="105" fill="#e0f2fe" font-size="11" font-weight="600" text-anchor="middle">GET Request</text>
+    <text x="85" y="120" fill="#38bdf8" font-size="10" text-anchor="middle">localhost:30000</text>
+    <text x="85" y="160" fill="#cbd5e1" font-size="10" text-anchor="middle">Accesses Node's static</text>
+    <text x="85" y="175" fill="#cbd5e1" font-size="10" text-anchor="middle">assigned port</text>
+  </g>
+
+  <!-- Arrow 1: Browser to NodePort -->
+  <path d="M 200 175 L 250 175" stroke="#38bdf8" stroke-width="2.5" />
+  <polygon points="248,169 258,175 248,181" fill="#38bdf8" />
+
+  <!-- Step 2: NodePort Service -->
+  <g transform="translate(260, 70)">
+    <rect x="0" y="0" width="230" height="210" rx="12" fill="#1e1b4b" stroke="#818cf8" stroke-width="2" filter="url(#shadow-nodeport)" />
+    <rect x="10" y="10" width="210" height="28" rx="6" fill="#4338ca" />
+    <text x="115" y="29" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">🚪 NodePort Service</text>
+    <text x="115" y="60" fill="#c7d2fe" font-size="11" font-weight="600" text-anchor="middle">portal-service</text>
+
+    <rect x="15" y="75" width="200" height="60" rx="6" fill="#0f172a" stroke="#818cf8" />
+    <text x="115" y="95" fill="#a5b4fc" font-size="11" text-anchor="middle">Node Port: <tspan fill="#ffffff" font-weight="700">30000</tspan></text>
+    <text x="115" y="112" fill="#a5b4fc" font-size="11" text-anchor="middle">Service Port: <tspan fill="#ffffff" font-weight="700">80</tspan></text>
+
+    <rect x="15" y="145" width="200" height="50" rx="6" fill="#312e81" />
+    <text x="115" y="165" fill="#fcd34d" font-size="10" font-weight="700" text-anchor="middle">Label Selector:</text>
+    <text x="115" y="180" fill="#fef08a" font-size="10" text-anchor="middle">component=frontend</text>
+  </g>
+
+  <!-- Arrow 2: Label Selector Arrow -->
+  <g>
+    <path d="M 490 175 L 545 175" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="5 4" />
+    <polygon points="543,169 553,175 543,181" fill="#f59e0b" />
+    <text x="517" y="162" fill="#fcd34d" font-size="10" font-weight="700" text-anchor="middle">Selector</text>
+  </g>
+
+  <!-- Step 3: Target Pod -->
+  <g transform="translate(555, 70)">
+    <rect x="0" y="0" width="235" height="210" rx="12" fill="#064e3b" stroke="#10b981" stroke-width="2" filter="url(#shadow-nodeport)" />
+    <rect x="10" y="10" width="215" height="28" rx="6" fill="#047857" />
+    <text x="117" y="29" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">📦 Matched Pod</text>
+    <text x="117" y="60" fill="#6ee7b7" font-size="11" font-weight="600" text-anchor="middle">grade-submission-portal</text>
+
+    <rect x="15" y="75" width="205" height="40" rx="6" fill="#022c22" stroke="#34d399" />
+    <text x="117" y="99" fill="#a7f3d0" font-size="11" text-anchor="middle">Labels: <tspan fill="#ffffff">component=frontend</tspan></text>
+
+    <!-- Arrow to Target Port inside Pod -->
+    <path d="M 117 120 L 117 140" stroke="#34d399" stroke-width="2" />
+    <polygon points="111,138 117,146 123,138" fill="#34d399" />
+
+    <rect x="15" y="148" width="205" height="48" rx="6" fill="#047857" stroke="#34d399" />
+    <text x="117" y="168" fill="#ffffff" font-size="12" font-weight="700" text-anchor="middle">Target Port: 5001</text>
+    <text x="117" y="184" fill="#d1fae5" font-size="10" text-anchor="middle">Portal Container Listens</text>
+  </g>
+</svg>

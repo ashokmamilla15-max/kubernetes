@@ -277,3 +277,80 @@ spec:
         exec:
           command: ["/bin/sh", "-c", "sleep 10"] # Gives LB time to update routing
 ```
+
+---
+
+## 🧪 7. Quiz & Real-World Interview Questions & Answers
+
+### 🧠 Quick Self-Assessment Quiz
+
+<details>
+<summary><b>Q1: Why should memory requests and limits be identical in Kubernetes Pod specs?</b></summary>
+<br/>
+<b>Answer:</b> Setting <code>memory.requests == memory.limits</code> ensures the Pod is assigned the <b>Guaranteed QoS class</b>. This prevents node memory overcommitment and protects the Pod from being evicted by the Linux OOM Killer under node memory pressure.
+</details>
+
+<details>
+<summary><b>Q2: What happens when a container exceeds its Memory limit vs. its CPU limit?</b></summary>
+<br/>
+<b>Answer:</b> 
+<ul>
+  <li><b>Memory limit exceeded</b>: Container is immediately killed by Linux OOM killer (Exit Code 137) and restarted based on <code>restartPolicy</code>.</li>
+  <li><b>CPU limit exceeded</b>: Container is <b>throttled</b> by the Linux CFS scheduler (execution slows down), but the process is NOT killed.</li>
+</ul>
+</details>
+
+<details>
+<summary><b>Q3: How do containers inside the same multi-container Pod communicate with each other?</b></summary>
+<br/>
+<b>Answer:</b> Containers inside the same Pod share the exact same network namespace and IP address. Therefore, they communicate with each other over <b><code>localhost</code> (127.0.0.1)</b> using their respective port numbers.
+</details>
+
+<details>
+<summary><b>Q4: What is the primary difference between a readinessProbe and a livenessProbe?</b></summary>
+<br/>
+<b>Answer:</b> 
+<ul>
+  <li><b><code>readinessProbe</code></b>: Controls traffic routing. If it fails, Kubernetes removes the Pod's IP from Service load balancer endpoints so it stops receiving traffic (preventing 502/503 errors), but does NOT restart the Pod.</li>
+  <li><b><code>livenessProbe</code></b>: Detects deadlocks/crashes. If it fails, <code>kubelet</code> terminates and restarts the container.</li>
+</ul>
+</details>
+
+<details>
+<summary><b>Q5: What execution order do initContainers follow?</b></summary>
+<br/>
+<b>Answer:</b> <code>initContainers</code> run <b>sequentially</b> one after another in the order they are listed in the YAML manifest. Each init container must run to completion and exit with status code 0 before the next init container or main application container starts.
+</details>
+
+---
+
+### 💼 Top DevOps / Kubernetes Interview Questions & Answers
+
+#### Q1: "Can a single Pod run multiple containers? Describe a real-world production scenario where you would use a multi-container Pod."
+> **Answer:** Yes, Pods can run multiple containers. This is common in helper design patterns such as the **Sidecar Pattern**.
+> - **Real-world Example**: A web application container paired with an Envoy proxy sidecar for mTLS service mesh routing, or a file-logging application paired with a Fluentbit sidecar container that tails log files and ships them to Elasticsearch/Loki over `localhost`.
+> - **Why in the same Pod?**: Both containers need to share the same lifecycle, local storage volume (`emptyDir`), or network namespace.
+
+#### Q2: "Explain the difference between `requests` and `limits` in Kubernetes resource management."
+> **Answer:**
+> - **`requests`**: The minimum guaranteed amount of CPU/Memory reserved for the container. The `kube-scheduler` uses `requests` to find a host Node with enough available capacity to place the Pod.
+> - **`limits`**: The maximum upper boundary of CPU/Memory a container is allowed to consume. Enforced at runtime by the container runtime via Linux cgroups.
+
+#### Q3: "What causes a Pod to enter `CrashLoopBackOff` vs `OOMKilled`, and how do you troubleshoot each?"
+> **Answer:**
+> - **`CrashLoopBackOff`**: Occurs when the main process inside the container crashes on startup (e.g. unhandled application code exception, missing environment variable, database connection refusal). 
+>   - *Troubleshooting*: Run `kubectl logs <pod-name> --previous` to inspect stdout/stderr logs from the failed container run.
+> - **`OOMKilled` (Exit Code 137)**: Occurs when the container process attempts to allocate more RAM than specified in `resources.limits.memory`.
+>   - *Troubleshooting*: Run `kubectl describe pod <pod-name>`, check `Last State: Terminated` -> `Exit Code: 137` and `Reason: OOMKilled`. Increase memory limits or fix application memory leaks.
+
+#### Q4: "Why are CPU limits controversial in production Kubernetes best practices?"
+> **Answer:** CPU limits enforce hard CFS (Completely Fair Scheduler) quota time slices (e.g. per 100ms quota period). If an application experiences a temporary burst in CPU usage, the kernel throttles the process even if the host node has 80% idle CPU available. This leads to latency spikes and degraded HTTP response times. Many DevOps teams specify `requests.cpu` to guarantee scheduling capacity, but leave `limits.cpu` unset or set very high.
+
+#### Q5: "Walk me through the graceful termination sequence of a Pod when `kubectl delete pod` is executed."
+> **Answer:**
+> 1. Pod state changes to `Terminating`.
+> 2. Endpoint Controller removes the Pod IP from all active Service Endpoints (stopping new incoming traffic).
+> 3. If a **`preStop` hook** is defined, it executes inside the container (e.g. sleeping 10s or sending a shutdown signal to finish inflight requests).
+> 4. Kubelet sends **`SIGTERM` (Signal 15)** to PID 1 inside the container to initiate graceful app cleanup.
+> 5. Kubelet waits up to **`terminationGracePeriodSeconds`** (default 30 seconds).
+> 6. If container processes are still running after the grace period expires, Kubelet sends **`SIGKILL` (Signal 9)** for immediate termination.

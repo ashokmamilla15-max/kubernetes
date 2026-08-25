@@ -175,3 +175,79 @@ Remove all created Pods and Services when testing is complete:
 ```bash
 kubectl delete -f .
 ```
+
+---
+
+## 🧪 5. Quiz & Real-World Interview Questions & Answers
+
+### 🧠 Quick Self-Assessment Quiz
+
+<details>
+<summary><b>Q1: Why is connecting directly to a Pod's internal IP address considered an anti-pattern in production?</b></summary>
+<br/>
+<b>Answer:</b> Pods are ephemeral. When a Pod restarts, crashes, or scales, Kubernetes assigns it a brand-new IP address. Connecting directly to Pod IPs causes connection failures whenever Pods are recreated. Services provide a stable Virtual IP and DNS name that survives Pod restarts.
+</details>
+
+<details>
+<summary><b>Q2: What is the default range of ports allocated for NodePort services in Kubernetes?</b></summary>
+<br/>
+<b>Answer:</b> The default reserved NodePort range is <b><code>30000</code> to <code>32767</code></b>.
+</details>
+
+<details>
+<summary><b>Q3: Is a ClusterIP service accessible from outside the Kubernetes cluster by default?</b></summary>
+<br/>
+<b>Answer:</b> <b>No.</b> ClusterIP services are assigned an internal virtual IP reachable only from within the cluster network (internal Pod-to-Pod communication).
+</details>
+
+<details>
+<summary><b>Q4: What is the difference between `port` and `targetPort` in a Kubernetes Service manifest?</b></summary>
+<br/>
+<b>Answer:</b> 
+<ul>
+  <li><b><code>port</code></b>: The port number exposed by the Service object itself inside the cluster.</li>
+  <li><b><code>targetPort</code></b>: The port number on the container inside the Pod where application traffic is actually forwarded.</li>
+</ul>
+</details>
+
+<details>
+<summary><b>Q5: What underlying Kubernetes object bridges a Service to matching Pod IPs?</b></summary>
+<br/>
+<b>Answer:</b> An <b>Endpoints</b> object (or EndpointSlice in newer K8s versions). Kubernetes continuously evaluates the Service's <code>selector</code> and populates Endpoints with the active IP addresses and target ports of healthy matching Pods.
+</details>
+
+---
+
+### 💼 Top DevOps / Kubernetes Interview Questions & Answers
+
+#### Q1: "How does Kubernetes Service Discovery work, and how does internal CoreDNS resolve Service names?"
+> **Answer:** 
+> When a Service is created, Kubernetes assigns it a stable ClusterIP address and CoreDNS automatically creates a DNS record for it in the format:
+> `<service-name>.<namespace>.svc.cluster.local` (e.g. `grade-submission-api-service.default.svc.cluster.local`).
+> Any Pod in the cluster can issue a request using short name (e.g. `http://grade-submission-api-service:3000`), which CoreDNS resolves to the ClusterIP. `kube-proxy` then intercepts the packet and routes it to an active Pod IP listed in the Service's Endpoints.
+
+#### Q2: "Compare NodePort, ClusterIP, and LoadBalancer service types. When would you use each?"
+> **Answer:**
+> - **ClusterIP**: Default internal service type. Use for backend databases, APIs, or internal microservices that should never be exposed publicly.
+> - **NodePort**: Opens a static high port (`30000-32767`) on every cluster node. Use for local development/testing (Minikube/Kind) or quick debugging. Not recommended for production.
+> - **LoadBalancer**: Provisions an external Cloud Load Balancer (AWS ALB/NLB, GCP Cloud LB, Azure LB) that routes public traffic directly into the cluster. Standard choice for production public workloads.
+
+#### Q3: "What does it mean when `kubectl describe service <name>` shows `Endpoints: <none>`? How do you troubleshoot and fix it?"
+> **Answer:**
+> `Endpoints: <none>` means the Service cannot find any healthy running Pods matching its label selector.
+> **Troubleshooting Steps:**
+> 1. Run `kubectl get pods --show-labels` and compare Pod labels against `kubectl get svc <service-name> -o yaml` -> `spec.selector`.
+> 2. Ensure labels match **exact key-value pairs** (case-sensitive).
+> 3. Verify Pod status is `Running` and passing its `readinessProbe` (unready Pods are stripped from Endpoints).
+
+#### Q4: "How does traffic flow from an external client to a Pod when using a NodePort service?"
+> **Answer:**
+> 1. Client sends HTTP request to `http://<NodeIP>:30000`.
+> 2. The host Node's kernel intercepts traffic on port 30000 via `kube-proxy` rules (iptables or IPVS).
+> 3. `kube-proxy` selects a healthy target Pod IP from the Service Endpoints (performing load balancing across nodes if necessary).
+> 4. Traffic is forwarded to the destination Pod's `containerPort` (e.g. port `5001`).
+
+#### Q5: "What is `externalTrafficPolicy: Local` vs `Cluster` in a NodePort or LoadBalancer service?"
+> **Answer:**
+> - **`Cluster`** (Default): Traffic arriving at a node may be forwarded to a target Pod running on a *different* node (adds extra network hop, hides original client IP).
+> - **`Local`**: Traffic arriving at a node is *only* routed to Pods running on that specific node. Preserves the original client source IP address and avoids extra network hops, but risks uneven traffic distribution if Pods aren't evenly distributed.

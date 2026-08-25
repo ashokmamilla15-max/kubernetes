@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="100%" height="100%" style="background-color: #0f172a; border-radius: 12px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <text x="400" y="32" fill="#38bdf8" font-size="18" font-weight="700" text-anchor="middle">Pod Configuration Anatomy (YAML Manifest Structure)</text>
+
+  <!-- Root Manifest Box -->
+  <rect x="30" y="55" width="220" height="245" rx="10" fill="#1e293b" stroke="#6366f1" stroke-width="2" />
+  <rect x="40" y="65" width="200" height="30" rx="6" fill="#4338ca" />
+  <text x="140" y="85" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">Pod Manifest (Root)</text>
+  <text x="50" y="125" fill="#a5b4fc" font-size="13" font-weight="600">apiVersion: <tspan fill="#ffffff">v1</tspan></text>
+  <text x="50" y="150" fill="#a5b4fc" font-size="13" font-weight="600">kind: <tspan fill="#ffffff">Pod</tspan></text>
+  <text x="50" y="180" fill="#cbd5e1" font-size="13" font-weight="600">metadata: <tspan fill="#94a3b8">↪ Details</tspan></text>
+  <text x="50" y="210" fill="#cbd5e1" font-size="13" font-weight="600">spec: <tspan fill="#94a3b8">↪ Runtime</tspan></text>
+
+  <!-- Connectors -->
+  <path d="M 250 180 L 290 130" stroke="#f59e0b" stroke-width="2" />
+  <polygon points="288,124 296,132 286,136" fill="#f59e0b" />
+
+  <path d="M 250 210 L 290 230" stroke="#10b981" stroke-width="2" />
+  <polygon points="286,224 296,230 288,238" fill="#10b981" />
+
+  <!-- Metadata Box -->
+  <rect x="295" y="85" width="475" height="90" rx="10" fill="#1e1b4b" stroke="#f59e0b" stroke-width="1.5" />
+  <text x="310" y="110" fill="#fcd34d" font-size="14" font-weight="700">🏷️ metadata</text>
+  <text x="325" y="135" fill="#e2e8f0" font-size="12">• <tspan fill="#f59e0b" font-weight="600">name:</tspan> Uniquely identifies the Pod (e.g. grade-submission-api)</text>
+  <text x="325" y="158" fill="#e2e8f0" font-size="12">• <tspan fill="#f59e0b" font-weight="600">labels:</tspan> Key-value pairs for flexible querying and component tagging</text>
+
+  <!-- Spec Box -->
+  <rect x="295" y="190" width="475" height="110" rx="10" fill="#064e3b" stroke="#10b981" stroke-width="1.5" />
+  <text x="310" y="215" fill="#6ee7b7" font-size="14" font-weight="700">🛠️ spec (Runtime Requirements)</text>
+  <text x="325" y="238" fill="#e2e8f0" font-size="12">• <tspan fill="#34d399" font-weight="600">containers[ ].name &amp; image:</tspan> Image repo source and container identifier</text>
+  <text x="325" y="260" fill="#e2e8f0" font-size="12">• <tspan fill="#34d399" font-weight="600">ports:</tspan> Target container ports serving incoming traffic</text>
+  <text x="325" y="282" fill="#e2e8f0" font-size="12">• <tspan fill="#34d399" font-weight="600">resources:</tspan> Memory &amp; CPU Requests (guaranteed) &amp; Limits (max)</text>
+</svg>

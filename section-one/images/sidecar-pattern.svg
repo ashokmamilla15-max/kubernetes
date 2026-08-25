@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="100%" height="100%" style="background-color: #0f172a; border-radius: 12px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <text x="400" y="32" fill="#38bdf8" font-size="18" font-weight="700" text-anchor="middle">Multi-Container Pod &amp; Sidecar Pattern (Localhost Inter-communication)</text>
+
+  <!-- Pod Boundary -->
+  <rect x="40" y="55" width="720" height="240" rx="16" fill="#1e293b" stroke="#3b82f6" stroke-width="2" />
+  <rect x="55" y="68" width="310" height="28" rx="6" fill="#2563eb" />
+  <text x="210" y="87" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">📦 Pod: grade-submission-api (Shared IP)</text>
+
+  <!-- Container 1: Main App -->
+  <rect x="70" y="115" width="280" height="150" rx="10" fill="#0f172a" stroke="#60a5fa" stroke-width="1.5" />
+  <rect x="80" y="125" width="260" height="26" rx="5" fill="#1d4ed8" />
+  <text x="210" y="143" fill="#ffffff" font-size="12" font-weight="700" text-anchor="middle">🚀 Main App Container (Port 3000)</text>
+  <text x="85" y="175" fill="#93c5fd" font-size="11">Stateless Grade Submission Service</text>
+  <text x="85" y="195" fill="#cbd5e1" font-size="11">• Serves REST requests</text>
+  <text x="85" y="215" fill="#cbd5e1" font-size="11">• Listens on <tspan fill="#60a5fa" font-weight="600">0.0.0.0:3000</tspan></text>
+  <text x="85" y="235" fill="#cbd5e1" font-size="11">• Image: rslim087/grade-submission-api</text>
+
+  <!-- Bi-directional Communication Arrows over Localhost -->
+  <g>
+    <path d="M 350 170 L 440 170" stroke="#f59e0b" stroke-width="3" stroke-dasharray="6 4" />
+    <polygon points="438,164 448,170 438,176" fill="#f59e0b" />
+
+    <path d="M 450 210 L 360 210" stroke="#10b981" stroke-width="3" stroke-dasharray="6 4" />
+    <polygon points="362,204 352,210 362,216" fill="#10b981" />
+
+    <rect x="360" y="178" width="80" height="24" rx="4" fill="#0f172a" stroke="#f59e0b" />
+    <text x="400" y="194" fill="#fcd34d" font-size="10" font-weight="700" text-anchor="middle">localhost</text>
+  </g>
+
+  <!-- Container 2: Sidecar -->
+  <rect x="450" y="115" width="280" height="150" rx="10" fill="#0f172a" stroke="#34d399" stroke-width="1.5" />
+  <rect x="460" y="125" width="260" height="26" rx="5" fill="#047857" />
+  <text x="590" y="143" fill="#ffffff" font-size="12" font-weight="700" text-anchor="middle">🩺 Sidecar Container (Health Checker)</text>
+  <text x="465" y="175" fill="#a7f3d0" font-size="11">Auxiliary Health Monitoring Process</text>
+  <text x="465" y="195" fill="#cbd5e1" font-size="11">• Periodically polls main app status</text>
+  <text x="465" y="215" fill="#cbd5e1" font-size="11">• Calls <tspan fill="#34d399" font-weight="600">http://localhost:3000/health</tspan></text>
+  <text x="465" y="235" fill="#cbd5e1" font-size="11">• Logs diagnostic metrics</text>
+</svg>
